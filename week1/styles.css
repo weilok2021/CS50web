@@ -1,0 +1,110 @@
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.top-right-links {
+    position: absolute;
+    top: 20px; /* 20px from the top */
+    right: 20px; /* 20px from the  right*/
+    border: 5px solid #ccc;
+    border-radius: 10px ;
+}
+
+.top-right-links a {
+    text-decoration: none;
+    margin-left: 15px; /*add some spaces between links*/
+    font-family: Arial, sans-serif;
+    font-size: 17px;
+    color: #6163f8;
+}
+
+body {
+  padding-top: 100px;
+}
+
+/* .search-bar {
+    width: 500px;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 700px;
+    border: 1px solid #ccc;
+} */
+
+.main-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.search-bar {
+  width: 100%;
+  max-width: 500px;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 700px;
+  border: 1px solid #ccc;
+}
+
+
+/* .buttons input[type="submit"] {
+    margin: 10px 5px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+} */
+
+.buttons input[type="submit"]:hover {
+  background-color: #e8e8e8;
+}
+
+.buttons input[type="submit"] {
+  padding: 10px 16px;
+  margin: 10px 5px;
+  background-color: #e8e8e8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logo-wrapper {
+  display: inline-block;
+  position: relative; /* any child with position: absolute would position relative to me*/
+}
+
+.image-caption {
+  /*this would stick to the parent logo*/
+  position: absolute; 
+  bottom: 0; /*stick to the bottom of .logo-wrapper*/
+  bottom: 0; /*stick to the right of .logo-wrapper*/
+  right: 0;
+  font-size: 16px;
+  color: #4285f4;
+}
+
+/* Ensure the form is also centered properly */
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Optional: make button match input width for a neater look */
+.buttons {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: center; /* center the button */
+  margin-top: 10px;
+}
+
+/* .buttons input[type="submit"] {
+  width: 100%;
+  max-width: 500px;
+} */

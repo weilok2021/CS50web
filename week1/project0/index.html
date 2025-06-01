@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Google Search</title>
+        <link href="styles.css" rel="stylesheet"> 
+    </head>
+
+    <body>
+        <div class="top-right-links">
+            <a href="image_search.html" target="_blank">Image Search</a>
+            <a href="advanced.html" target="_blank">Advanced Search</a>
+        </div>
+
+        <main class="main-container">
+            <!-- Google logo -->
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google logo" class="logo">
+
+            <!-- Google Form-->
+            <!-- analogy to understand differences between name and value
+             example 1: name: weilok
+             example 2: role: programmer
+             name and role is the name in this case, and value is weilok and programmer-->
+            <form action="https://www.google.com/search">
+                <input type="text" name="q" class="search-bar">
+                
+                <!-- div creates a new line as a block level element
+                 so buttons appears below search-bar
+                -->
+                <div class="buttons">
+                    <input type="submit" value="Google Search">
+                    <input type="submit" value="I'm feeling lucky" name="btnI">
+                </div>
+            </form>
+        </main> 
+    </body>
+</html>
