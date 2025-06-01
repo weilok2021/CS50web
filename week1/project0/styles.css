@@ -42,7 +42,8 @@ body {
 }
 
 .search-bar {
-  width: 100%;
+  margin-top: 15px;
+  width: 70%;
   max-width: 500px;
   font-size: 16px;
   padding: 10px;
@@ -66,7 +67,7 @@ body {
 .buttons input[type="submit"] {
   padding: 10px 16px;
   margin: 10px 5px;
-  background-color: #e8e8e8;
+  background-color: #f8f9fa;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -100,11 +101,24 @@ form {
   width: 100%;
   max-width: 500px;
   display: flex;
-  justify-content: center; /* center the button */
+  justify-content: center; 
   margin-top: 10px;
 }
 
-/* .buttons input[type="submit"] {
-  width: 100%;
-  max-width: 500px;
-} */
+
+
+/* ✅ Media query for small screens */
+@media (max-width: 600px) {
+  .search-bar {
+    width: 90%;
+  }
+
+  .buttons {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .buttons input[type="submit"] {
+    width: 90%;
+  }
+}
