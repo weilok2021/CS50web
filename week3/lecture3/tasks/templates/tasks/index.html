@@ -1,0 +1,11 @@
+{% extends "tasks/layout.html" %} <!-- tells django we wish to have access to all the files in static folder-->
+
+{% block body %}
+    <h1>To Do List</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task }}</li>
+        {% endfor %}
+    <ul>
+    <a href="{% url 'tasks:add' %}">Add a new Task</a>
+{% endblock %}
