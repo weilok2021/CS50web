@@ -18,5 +18,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("encyclopedia.urls"))
+    path('', include("encyclopedia.urls")) # when user enter /wiki in url, django will lookup to encyclopedia urls according to this path
 ]
