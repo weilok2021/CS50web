@@ -1,0 +1,19 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Related entries
+{% endblock %}
+
+{% block body %}
+    <h1>Related Entries</h1>
+    {% if related_entries %}
+        {% for entry in related_entries %}
+            <ul>
+                <li><a href="{% url 'display_entry' title=entry %}">{{ entry }}</a></li>
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No related results found. This entry does not exist in the encyclopedia.</p>
+    {% endif %}
+{% endblock %}
+

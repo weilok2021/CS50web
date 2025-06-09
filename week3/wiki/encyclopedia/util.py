@@ -31,11 +31,14 @@ def get_entry(title):
     Retrieves an encyclopedia entry by its title. If no such
     entry exists, the function returns None.
     """
-    try:
-        f = default_storage.open(f"entries/{title}.md")
-        return f.read().decode("utf-8")
-    except FileNotFoundError:
-        return None
+    """Case-insensitive entry retrieval"""
+    _, filenames = default_storage.listdir("entries")  # More readable version
+    for filename in filenames:
+        if filename.lower() == f"{title.lower()}.md":
+            f = default_storage.open(f"entries/{filename}")
+            return f.read().decode("utf-8")
+    return None
+
 
 def md_converter(entry):
     """

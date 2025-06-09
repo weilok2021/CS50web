@@ -8,4 +8,6 @@ urlpatterns = [
     path("wiki", views.index, name="wiki"),
     # when user enter /wiki/TITLE into the url, this should render the page that displays the content of that encyclopedia entry
     path("wiki/<str:title>", views.display_entry, name="display_entry"),
+    # this path is being used when user search for entries, and this will be the action of the form.
+    path("search", views.search_entry, name="search_entry"),
 ]
