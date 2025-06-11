@@ -10,6 +10,8 @@ urlpatterns = [
     path("wiki/<str:title>", views.display_entry, name="display_entry"),
     # this path is being used when user search for entries, and this will be the action of the form.
     path("search", views.search_entry, name="search_entry"),
-    
-    path("NewPage", views.add_entry, name="add_entry")
+    # this path is used when user pressed create new page, and this will be the action of the form.
+    path("NewPage", views.add_entry, name="add_entry"),
+    # this path's action is used when user pressed random page
+    path("RandomEntry", views.random_entry, name="random_entry")
 ]

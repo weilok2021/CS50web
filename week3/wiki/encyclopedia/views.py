@@ -4,6 +4,7 @@ from . import util
 from django import forms
 from django.contrib import messages
 from django.shortcuts import redirect
+import random
 
 
 
@@ -126,3 +127,7 @@ def add_entry(request):
     return render(request, "encyclopedia/new_entry.html", {
         "form": NewEntryForm(), # all templates have access to the search form
     })
+
+def random_entry(request):
+    rand_entry = random.choice(util.list_entries())
+    return display_entry(request, rand_entry)
