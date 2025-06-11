@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from . import util
 from django import forms
+from django.contrib import messages
+from django.shortcuts import redirect
+
+
 
 # to create a django form for user to submit rather than the html form
 # this will do client validation for us and we can do server validation in views.py
@@ -20,7 +24,7 @@ class NewEntryForm(forms.Form):
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries(),
-        "form": NewEntryForm()  # all templates have access to the form
+        "form": NewEntryForm()  # all templates have access to the search form
     })
 
 
@@ -78,4 +82,47 @@ def search_entry(request):
     # when user load the page, a get request will be send to this function, and a new form will be generated for the rendered page
     return render(request, "encyclopedia/index.html", {
         "form": NewEntryForm()
+    })
+
+def add_entry(request):
+    if request.method == "POST": 
+        # extract information from forms input in new_entry.html
+        title = request.POST.get("title")
+        entry_content = request.POST.get("entry-content")
+
+        if title == None or entry_content == None or title.strip() == "" or entry_content.strip() == "":
+            messages.error(request, "Title and content cannot be empty!")
+            # If the form is invalid, re-render the page with existing information.
+            return render(request, "encyclopedia/new_entry.html", {
+                "form": NewEntryForm(), # all templates have access to the search form
+                "title": title,
+                "entry_content": entry_content
+            })
+        else:
+            # check if this entry is existed in the encyclopedia
+            for entry in util.list_entries():
+                if title.strip().lower() == entry.strip().lower():
+                    # When you detect an error:
+                    messages.error(request, "An entry with this title already exists!")
+                    # Then redirect or render as usual
+                    return render(request, "encyclopedia/new_entry.html", {
+                        "form": NewEntryForm(), 
+                        "title": title,
+                        "entry_content": entry_content,
+                    })
+            
+            # save the entry if title and entry content are valid
+            # preprocess the title and entry_content into valid format before saving the entry
+            # For title - strip whitespace but preserve case?
+            title = title.strip()
+            # For content - definitely preserve original case
+            # entry_content = entry_content.strip()
+
+            # Then save with proper formatting
+            util.save_entry(title, f'# {title}\n\n{entry_content}')
+            # After util.save_entry(title, entry_content):
+            return redirect("display_entry", title=title)
+
+    return render(request, "encyclopedia/new_entry.html", {
+        "form": NewEntryForm(), # all templates have access to the search form
     })

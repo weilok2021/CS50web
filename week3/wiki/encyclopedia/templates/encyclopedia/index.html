@@ -7,14 +7,14 @@
 {% block body %}
     <h1>All Pages</h1>
 
-    <ul>
         {% for entry in entries %}
             <!-- title=entry → This sets the title parameter in the URL pattern to the value of entry.
             So if entry = "Django", Django will generate:
                 <a href="/wiki/Django">Django</a>
             -->
-            <li><a href="{% url 'display_entry' title=entry %}">{{ entry }}</a></li>
+            <ul>
+                <li><a href="{% url 'display_entry' title=entry %}">{{ entry }}</a></li>
+            </ul>
         {% endfor %}
-    </ul>
 
 {% endblock %}

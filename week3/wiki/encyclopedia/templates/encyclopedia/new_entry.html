@@ -1,0 +1,32 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    New Entry
+{% endblock%}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'add_entry' %}" method="post">
+        {% csrf_token %}
+        <div>
+            <!-- the title and entry_content passed in here will only be seen by user when they provide invalid inputs for new entry-->
+            <label for="title">Enter Title</label>
+            <input type="text" id="title" name="title" value="{{ title }}" required>
+            <p><label for="entry-content">Enter Entry Content</label></p>
+            <!-- For user to input entry content-->
+            <textarea id="entry-content" name="entry-content" required>
+                {{ entry_content }}
+            </textarea>
+            <div>
+                <input type="submit" value="Save Content">
+            </div>
+        </div>
+    </form>
+{% endblock %}

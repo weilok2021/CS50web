@@ -23,8 +23,9 @@ def save_entry(title, content):
     filename = f"entries/{title}.md"
     if default_storage.exists(filename):
         default_storage.delete(filename)
-    default_storage.save(filename, ContentFile(content))
-
+    # default_storage.save(filename, ContentFile(content))
+    # Explicitly encode as UTF-8
+    default_storage.save(filename, ContentFile(content.encode('utf-8')))
 
 def get_entry(title):
     """
