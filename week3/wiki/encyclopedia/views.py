@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 import random
 
+# All of these functions  basically just handle get request, post request or handle both.
 
 
 # to create a django form for user to submit rather than the html form
@@ -131,3 +132,33 @@ def add_entry(request):
 def random_entry(request):
     rand_entry = random.choice(util.list_entries())
     return display_entry(request, rand_entry)
+
+def edit_entry(request, title):
+    # extract current entry content from {title}.md
+    curr_entry_content = util.get_entry(title)
+
+    # handle post request
+    if request.method == "POST":
+        # this is edited content submitted by user
+        new_entry_content = request.POST.get("new-entry-content")
+
+        # check if this edited content by user is an invalid input
+        # use new_entry_content.strip() == "" to check is new_entry_content is an empty space
+        if new_entry_content == None or new_entry_content.strip() == "":
+            return render(request, "encyclopedia/new_entry.html", {
+                "form": NewEntryForm(), # all templates have access to the search form
+                "new_entry_content": new_entry_content, # user should allowed to edit their invalid input
+                "title": title,
+            })
+        else:
+            # save the new_entry_content to replace current entry content
+            util.save_entry(title, new_entry_content)
+            # after saving entry with edited content, redirect user to the entry page
+            return redirect("display_entry", title=title)
+
+    # handle get request
+    return render(request, "encyclopedia/edit_entry.html", {
+        "form": NewEntryForm(), # all templates have access to the search form
+        "curr_entry_content": curr_entry_content,
+        "title": title,
+    })
