@@ -1,0 +1,37 @@
+{% extends "flights/layout.html" %}
+
+{% block body %}
+    <!-- this flight_id is passing by the row number of flight in index.html but not the actual database id -->
+    <!-- this is bcuz the database id might not be following exact sequence like 1, 2, 3, 4, 5 as some of the data is deleted -->
+    <h1>Flight {{ flight_id }}</h1>
+    <ul>
+        <li>{{ flight.origin }}</li>
+        <li>{{ flight.destination }}</li>
+        <li>{{ flight.duration }} minutes</li>
+    </ul>
+
+    <h2>Passengers:</h2>
+    <ul>
+        {% if passengers %}
+            {% for passenger in passengers %}
+                <li>{{ passenger }}</li>
+            {% endfor %}
+        {% else %}
+            <li>No passengers.</li>
+        {% endif %}
+    </ul>
+
+    <h2>Add Passenger</h2>
+    <form action="{% url 'book' flight_id %}" method="post">
+        {% csrf_token %}
+        <select name="passenger">
+            {% for passenger in non_passengers %}
+                <option value="{{ passenger.id }}">{{ passenger }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="book flight">
+    </form>
+
+    <a href="{% url 'index' %}">All Flights</a>
+
+{% endblock %}
