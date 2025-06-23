@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 
@@ -146,13 +147,15 @@ def add_watchlist(request, listing_id):
                 if watchlist.listing.id == listing_id: # if listing already existed within watchlist
                     # rerender listing.html with message
                     # render page with some information to tell user shouldn't as this listing already in watchlist
+                    messages.warning(request, "This item is already in your watchlist!")
                     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
                 
         # if the watchlist is not existed (empty), or listing is not existing within watchlist, add the watchlist.
         listing = Listing.objects.get(id=listing_id) # instantiate this watch list and relate it to user and this listing
         watchlist = Watchlist(user=request.user, listing=listing)
         watchlist.save() # add this into database
-        
+        return HttpResponseRedirect(reverse("display_watchlist"))
+
     # handle get request
     return display_listing(request, listing_id)
 

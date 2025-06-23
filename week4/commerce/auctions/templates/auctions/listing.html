@@ -1,6 +1,15 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    <!-- this error will prompt to the user when user added redundant listing -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     {% if listing %}
         <h2>Listing: {{ listing.title }}</h2>
         <figure>
