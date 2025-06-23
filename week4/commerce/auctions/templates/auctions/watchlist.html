@@ -5,12 +5,19 @@
         <h2>Watchlist</h2>
         {% for watchlist in all_watchlist %}
             {% if watchlist.listing.state %}
-                <div><a href="{% url 'listing' watchlist.listing.id %}"><img src={{ watchlist.listing.img_url }} alt={{ watchlist.listing.title }} width="300" height="300"></a></div>
+            <div>
                 <div><h3>{{ watchlist.listing.title }}</h3></div>
+                <div><a href="{% url 'listing' watchlist.listing.id %}"><img src={{ watchlist.listing.img_url }} alt={{ watchlist.listing.title }} width="300" height="300"></a></div>
                 <div><strong>RM</strong> {{ watchlist.listing.starting_price }}</div>
                 <div><strong>Description</strong></div>
                 <div>{{ watchlist.listing.description }}</div>
-
+                <div>
+                    <form action="{% url 'remove_watchlist' watchlist.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="remove" value="Remove Watchlist">
+                    </form>
+                </div>
+            </div>
             {% else %}
                 <div><strong>Closed Listing</strong></div>    
             {% endif %}

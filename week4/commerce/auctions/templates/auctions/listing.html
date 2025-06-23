@@ -11,6 +11,9 @@
     {% endif %}
 
     {% if listing %}
+        {% if watchlist_exist and user.is_authenticated %}
+            <div><strong>watchlisted</strong></div>
+        {% endif %}
         <h2>Listing: {{ listing.title }}</h2>
         <figure>
             <img src={{ listing.img_url }} alt={{ listing.title }} width="300" height="300">

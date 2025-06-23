@@ -3,9 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
+
 
 
 
@@ -81,9 +82,12 @@ def display_listing(request, listing_id):
     try:
         listing = active_listings.get(id=listing_id)
         category = listing.category
+        # returns a boolean value, true denotes listing is in watchlist, false denotes listing is not in watchlist
+        watchlist = listing.listing_watchlist.filter(user=request.user).exists() # verify if a user store this listing into their watchlist
         return render(request, "auctions/listing.html", {
             "listing": listing,
             "category": category,
+            "watchlist_exist": watchlist,
         })
     except:
         return render(request, "auctions/listing.html", {
@@ -161,7 +165,16 @@ def add_watchlist(request, listing_id):
 
 
 @login_required
-def remove_watchlist(request, listing_id):
-    pass
+def remove_watchlist(request, watchlist_id):
+    if request.method == "POST":
+        watchlist = get_object_or_404(Watchlist, id=watchlist_id)
+        # watchlist = Watchlist.objects.get(id=watchlist_id)
+        watchlist.delete()
+        # redirect to watchlist page after watchlist being removed
+        messages.success(request, "Removed from watchlist!")
+        return HttpResponseRedirect(reverse("display_watchlist"))
+    # handle get request
+    return display_watchlist(request)
+    
 
 
