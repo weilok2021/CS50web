@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 
 
-from .models import User, Listing, Comment, Category, Bid
+from .models import User, Listing, Comment, Category, Bid, Watchlist
 
 """
     User who didn't login can only view active listings, and categories of listings
@@ -76,10 +76,13 @@ def register(request):
 
 def display_listing(request, listing_id):
     active_listings = Listing.objects.filter(state=True) # Active listings for whole website, this could be seen by anyone including those without accounts
+
     try:
         listing = active_listings.get(id=listing_id)
+        category = listing.category
         return render(request, "auctions/listing.html", {
             "listing": listing,
+            "category": category,
         })
     except:
         return render(request, "auctions/listing.html", {
@@ -119,3 +122,43 @@ def create_listing(request):
     return render(request, "auctions/new_listing.html", {
         "listings": listings,
     })
+
+
+@login_required
+def display_watchlist(request):
+    # display watchlist for each signed in user
+    all_watchlist = Watchlist.objects.filter(user=request.user)
+    return render(request, "auctions/watchlist.html", {
+        "all_watchlist": all_watchlist,
+    })
+
+
+@login_required
+def add_watchlist(request, listing_id):
+    # handle post request
+    if request.method == "POST":
+        # check if this listing already in this user's watchlist
+        # get all the user's watchlist
+        all_watchlist = Watchlist.objects.filter(user=request.user)
+        # be careful what is an empty object represents, empty data for a model != None but is a <QuerySet []>
+        if all_watchlist.exists(): # check if watchlist exists in existing watchlist
+            for watchlist in all_watchlist:
+                if watchlist.listing.id == listing_id: # if listing already existed within watchlist
+                    # rerender listing.html with message
+                    # render page with some information to tell user shouldn't as this listing already in watchlist
+                    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+                
+        # if the watchlist is not existed (empty), or listing is not existing within watchlist, add the watchlist.
+        listing = Listing.objects.get(id=listing_id) # instantiate this watch list and relate it to user and this listing
+        watchlist = Watchlist(user=request.user, listing=listing)
+        watchlist.save() # add this into database
+        
+    # handle get request
+    return display_listing(request, listing_id)
+
+
+@login_required
+def remove_watchlist(request, listing_id):
+    pass
+
+

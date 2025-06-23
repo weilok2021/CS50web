@@ -1,0 +1,21 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    {% if all_watchlist %}
+        <h2>Watchlist</h2>
+        {% for watchlist in all_watchlist %}
+            {% if watchlist.listing.state %}
+                <div><a href="{% url 'listing' watchlist.listing.id %}"><img src={{ watchlist.listing.img_url }} alt={{ watchlist.listing.title }} width="300" height="300"></a></div>
+                <div><h3>{{ watchlist.listing.title }}</h3></div>
+                <div><strong>RM</strong> {{ watchlist.listing.starting_price }}</div>
+                <div><strong>Description</strong></div>
+                <div>{{ watchlist.listing.description }}</div>
+
+            {% else %}
+                <div><strong>Closed Listing</strong></div>    
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h2>No Watchlist</h2>
+    {% endif %}
+{% endblock %}

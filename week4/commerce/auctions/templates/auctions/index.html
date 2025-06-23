@@ -4,8 +4,8 @@
     <h2>Active Listings</h2>
     {%if active_listings %}
         {% for listing in active_listings %}
-            <a href="{% url 'listing' listing.id %}"><img src={{ listing.img_url }} alt={{ listing.title }} width="300" height="300"></a>
-            <div>{{ listing.title }}</div>
+            <div><a href="{% url 'listing' listing.id %}"><img src={{ listing.img_url }} alt={{ listing.title }} width="300" height="300"></a></div>
+            <div><h3>{{ listing.title }}</h3></div>
             <div>RM {{ listing.starting_price }}</div>
         {% endfor %}
     {% else %}
