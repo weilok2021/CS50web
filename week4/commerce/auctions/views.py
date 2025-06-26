@@ -80,14 +80,19 @@ def display_listing(request, listing_id):
     active_listings = Listing.objects.filter(state=True) # Active listings for whole website, this could be seen by anyone including those without accounts
 
     try:
-        listing = active_listings.get(id=listing_id)
+        listing = active_listings.get(id=listing_id) # get will trigger error when listing is not active
         category = listing.category
-        # returns a boolean value, true denotes listing is in watchlist, false denotes listing is not in watchlist
+        bids = listing.listing_bid.all() # returns all bids in this listing or an empty query set
+        current_price = listing.get_current_price()
         watchlist = listing.listing_watchlist.filter(user=request.user).exists() # verify if a user store this listing into their watchlist
         return render(request, "auctions/listing.html", {
             "listing": listing,
             "category": category,
             "watchlist_exist": watchlist,
+            "bids": bids,
+            "bids_exists": bids.exists(),
+            "bids_count": bids.count(),
+            "current_price": current_price,
         })
     except:
         return render(request, "auctions/listing.html", {
@@ -175,6 +180,37 @@ def remove_watchlist(request, watchlist_id):
         return HttpResponseRedirect(reverse("display_watchlist"))
     # handle get request
     return display_watchlist(request)
+
+
+@login_required
+def place_bid(request, listing_id):
+    # even invalid bids get save, need to reconsider how to refactor maybe
+    # the problems could falls within listing.get_current_price()
+
+    if request.method == "POST":
+        price = float(request.POST["price"])
+        if price > Listing.objects.get(id=listing_id).get_current_price():
+            bid = Bid(user=request.user, listing=Listing.objects.get(id=listing_id), price=price) # the verification will be done within bid model
+            bid.save()
+        else:
+            return HttpResponse("This is not a valid bid! (Please place bid higher than the current price)")
+    # handle get request
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+@login_required
+def close_listing(request, listing_id):
+    listing = Listing.objects.filter(id=listing_id, creator=request.user)
+    if listing.exists():
+        bids = listing.listing_bid.all()
+        if bids.exists():
+            highest_bid = bids.order_by("-price").first()
+            winner = highest_bid.user
+        listing.state = False # close the listing
+        listing.winner = winner
+        listing.save()
+    return HttpResponseRedirect(reverse("index"))
+
+    
     
 
 

@@ -46,6 +46,7 @@ class Listing(models.Model):
             # get the bid object with highest price
             highest_bid = bids.order_by("-price").first()
             return highest_bid.price
+        # else, there are no bids and starting price is current highest price
         return self.starting_price
 
     # to check if the listing is active
@@ -79,6 +80,8 @@ class Bid(models.Model):
         # A valid bid should be larger than existing bids price or as large as starting price
         # starting_price <= existing_bids.price < valid bid
         highest_price = self.listing.get_current_price()
+        # if highest_price == self.listing.starting_price:
+        #     pass
         if self.price <= highest_price:
             raise ValidationError(f"Bid must be higher than ${highest_price}")
             

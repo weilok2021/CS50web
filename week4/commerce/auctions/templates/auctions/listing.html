@@ -18,9 +18,11 @@
         <figure>
             <img src={{ listing.img_url }} alt={{ listing.title }} width="300" height="300">
             <figcaption>{{ listing.title }}</figcaption>
-            <figcaption>RM{{ listing.starting_price }}</figcaption>
-            <div>{{ listing.description }}</div>
         </figure>
+
+        <div>Starting Price: RM{{ listing.starting_price }}</div>
+        <div>Current Price: RM{{ current_price }}</div>
+        <div>{{ listing.description }}</div>
 
         <h3>Details</h3>
         <ul>
@@ -32,13 +34,31 @@
             {% endif %}
         </ul>
 
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and user != listing.creator %} <!-- user don't need to add to watchlist or place a bid when it's his own listing-->
             <div>
                 <form action="{% url 'add_watchlist' listing.id %}" method="post">
                     {% csrf_token %}
                     <input type="submit" name="watchlist-btn" value="Add to watchlist">
                 </form>
             </div>
+
+            <div>
+                <form action="{% url 'place_bid' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <div>{{ bids_count }} so far. Place your bid now!</div>
+                    <input type="number" placeholder="Bid" name="price">
+                    <input type="submit" name="bid-btn" value="Place Bid">
+                </form>
+            </div>
+        {% endif %}
+        
+
+        {% if user == listing.creator %}
+            <div>
+                <p>you can close this listing, this veryfication is worked! Leave it for now.</p>
+            </div>
+        {% else %}
+            
         {% endif %}
     {% else %}  
         <h2>{{ message }}</h2>
