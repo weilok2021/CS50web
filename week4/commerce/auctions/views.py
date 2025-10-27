@@ -95,14 +95,6 @@ def display_listing(request, listing_id):
             "current_price": current_price,
         })
     except:
-        # this block of code runs when the listing is not active. It could be 2 cases
-        # case 1: the signed in user is the winner
-
-        # listing = Listing.objects.filter(state=False, id=listing_id)
-        # if listing.exists(): # this is a valid listing just that being closed which shows there's a winner
-        #     if listing.winner == request.user:
-        #         return HttpResponse("Congratulations! You have won the Bid")
-
         return render(request, "auctions/listing.html", {
             "message": "This is not an active listing!",
         })
