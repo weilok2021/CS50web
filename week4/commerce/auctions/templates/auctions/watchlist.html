@@ -19,7 +19,10 @@
                 </div>
             </div>
             {% else %}
-                <div><strong>Closed Listing</strong></div>    
+                <div>
+                    <a href="{% url 'listing' watchlist.listing.id %}">{{ watchlist.listing.title }}</a>
+                    (Closed)
+                </div>    
             {% endif %}
         {% endfor %}
     {% else %}

@@ -77,27 +77,32 @@ def register(request):
 
 
 def display_listing(request, listing_id):
-    active_listings = Listing.objects.filter(state=True) # Active listings for whole website, this could be seen by anyone including those without accounts
+    listing = get_object_or_404(Listing, id=listing_id)
 
-    try:
-        listing = active_listings.get(id=listing_id) # get will trigger error when listing is not active
-        category = listing.category
-        bids = listing.listing_bid.all() # returns all bids in this listing or an empty query set
-        current_price = listing.get_current_price()
-        watchlist = listing.listing_watchlist.filter(user=request.user).exists() # verify if a user store this listing into their watchlist
-        return render(request, "auctions/listing.html", {
-            "listing": listing,
-            "category": category,
-            "watchlist_exist": watchlist,
-            "bids": bids,
-            "bids_exists": bids.exists(),
-            "bids_count": bids.count(),
-            "current_price": current_price,
-        })
-    except:
-        return render(request, "auctions/listing.html", {
-            "message": "This is not an active listing!",
-        })
+    # Get the current category
+    category = listing.category if hasattr(listing, 'category') else None
+
+    # Calculate current price (highest bid or starting)
+    bids = listing.listing_bid.all()
+    if bids.exists():
+        current_price = bids.order_by("-price").first().price
+    else:
+        current_price = listing.starting_price
+
+    # Check if listing is on user's watchlist
+    watchlist_exist = False
+    if request.user.is_authenticated:
+        watchlist_exist = request.user in listing.listing_watchlist.all()
+
+    context = {
+        "listing": listing,
+        "category": category,
+        "current_price": current_price,
+        "bids_count": bids.count(),
+        "watchlist_exist": watchlist_exist,
+    }
+    return render(request, "auctions/listing.html", context)
+
 
 
 @login_required
@@ -197,20 +202,64 @@ def place_bid(request, listing_id):
     # handle get request
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
+# @login_required
+# def close_listing(request, listing_id):
+#     listing = Listing.objects.filter(id=listing_id, creator=request.user)
+#     if listing.exists():
+#         bids = listing.listing_bid.all()
+#         if bids.exists():
+#             highest_bid = bids.order_by("-price").first()
+#             winner = highest_bid.user
+#         listing.state = False # close the listing
+#         listing.winner = winner
+#         listing.save()
+#     return HttpResponseRedirect(reverse("index"))
+
+# @login_required
+# def close_listing(request, listing_id):
+#     try:
+#         listing = Listing.objects.get(id=listing_id, creator=request.user)
+#     except Listing.DoesNotExist:
+#         return HttpResponseRedirect(reverse("index"))
+
+#     bids = listing.listing_bid.all()
+#     if bids.exists():
+#         highest_bid = bids.order_by("-price").first()
+#         listing.winner = highest_bid.user
+
+#     listing.state = False  # close the listing
+#     listing.save()
+#     return HttpResponseRedirect(reverse("index"))
+
 @login_required
 def close_listing(request, listing_id):
-    listing = Listing.objects.filter(id=listing_id, creator=request.user)
-    if listing.exists():
-        bids = listing.listing_bid.all()
-        if bids.exists():
-            highest_bid = bids.order_by("-price").first()
-            winner = highest_bid.user
-        listing.state = False # close the listing
-        listing.winner = winner
-        listing.save()
-    return HttpResponseRedirect(reverse("index"))
+    try:
+        listing = Listing.objects.get(id=listing_id, creator=request.user)
+    except Listing.DoesNotExist:
+        return HttpResponseRedirect(reverse("index"))
 
-    
-    
+    bids = listing.listing_bid.all()
+    if bids.exists():
+        highest_bid = bids.order_by("-price").first()
+        listing.winner = highest_bid.user
+
+    listing.state = False  # Mark as closed
+    listing.save()
+
+    # ✅ Redirect back to the listing page, not the index
+    return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
 
+# To allow user have access to their winning listing
+@login_required
+def my_listings(request):
+    # Listings the user has created
+    created = Listing.objects.filter(creator=request.user)
+
+    # Listings the user has won
+    won = Listing.objects.filter(winner=request.user)
+
+    return render(request, "auctions/my_listings.html", {
+        "created_listings": created,
+        "won_listings": won
+    })

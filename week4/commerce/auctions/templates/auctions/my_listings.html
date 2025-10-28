@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>My Listings</h2>
+
+<h3>Listings You Created</h3>
+<ul>
+{% for listing in created_listings %}
+    <li>
+        <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
+        {% if not listing.state %} (Closed) {% endif %}
+    </li>
+{% empty %}
+    <li>You haven't created any listings yet.</li>
+{% endfor %}
+</ul>
+
+<h3>Listings You Won</h3>
+<ul>
+{% for listing in won_listings %}
+    <li>
+        <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a> 🏆 You won!
+    </li>
+{% empty %}
+    <li>You haven’t won any listings yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

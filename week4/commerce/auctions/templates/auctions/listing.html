@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <!-- this error will prompt to the user when user added redundant listing -->
+    <!-- Display messages (e.g. redundant listing error) -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">
@@ -11,18 +11,33 @@
     {% endif %}
 
     {% if listing %}
-        {% if watchlist_exist and user.is_authenticated %}
-            <div><strong>watchlisted</strong></div>
+        <!-- Show closed listing notice -->
+        {% if not listing.state %}
+            <div class="alert alert-secondary">
+                <strong>This listing is closed.</strong>
+                {% if listing.winner %}
+                    <br>Winner: {{ listing.winner.username }}
+                {% endif %}
+            </div>
+
+            <!-- 🎉 If current user is the winner -->
+            {% if user.is_authenticated and user == listing.winner %}
+                <div class="alert alert-success mt-3">
+                    🎉 Congratulations {{ listing.winner.username }}! You won this auction.
+                </div>
+            {% endif %}
         {% endif %}
+
         <h2>Listing: {{ listing.title }}</h2>
+
         <figure>
-            <img src={{ listing.img_url }} alt={{ listing.title }} width="300" height="300">
+            <img src="{{ listing.img_url }}" alt="{{ listing.title }}" width="300" height="300">
             <figcaption>{{ listing.title }}</figcaption>
         </figure>
 
-        <div>Starting Price: RM{{ listing.starting_price }}</div>
-        <div>Current Price: RM{{ current_price }}</div>
-        <div>{{ listing.description }}</div>
+        <div><strong>Starting Price:</strong> RM{{ listing.starting_price }}</div>
+        <div><strong>Current Price:</strong> RM{{ current_price }}</div>
+        <p>{{ listing.description }}</p>
 
         <h3>Details</h3>
         <ul>
@@ -30,37 +45,51 @@
             {% if category %}
                 <li>Category: {{ category.name }}</li>
             {% else %}
-                <li> No Category. </li>
+                <li>No category</li>
             {% endif %}
         </ul>
 
-        {% if user.is_authenticated and user != listing.creator %} <!-- user don't need to add to watchlist or place a bid when it's his own listing-->
+        <!-- Watchlist and Bid Options -->
+        {% if user.is_authenticated and user != listing.creator and listing.state %}
             <div>
                 <form action="{% url 'add_watchlist' listing.id %}" method="post">
                     {% csrf_token %}
-                    <input type="submit" name="watchlist-btn" value="Add to watchlist">
+                    {% if watchlist_exist %}
+                        <input type="submit" value="Remove from watchlist" name="watchlist-btn">
+                    {% else %}
+                        <input type="submit" value="Add to watchlist" name="watchlist-btn">
+                    {% endif %}
                 </form>
             </div>
 
-            <div>
+            <div class="mt-3">
                 <form action="{% url 'place_bid' listing.id %}" method="post">
                     {% csrf_token %}
-                    <div>{{ bids_count }} so far. Place your bid now!</div>
-                    <input type="number" placeholder="Bid" name="price">
+                    <div>{{ bids_count }} bid(s) so far. Place your bid now!</div>
+                    <input type="number" placeholder="Bid" name="price" min="0" step="0.01" required>
                     <input type="submit" name="bid-btn" value="Place Bid">
                 </form>
             </div>
         {% endif %}
-        
 
+        <!-- Close Listing (only creator can see) -->
         {% if user == listing.creator %}
-            <div>
-                <p>you can close this listing, this veryfication is worked! Leave it for now.</p>
+            <div class="mt-4">
+                <p><em>I created this listing.</em></p>
+                {% if listing.state %}
+                    <form action="{% url 'close_listing' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Close Listing</button>
+                    </form>
+                {% else %}
+                    <p class="text-success"><strong>This listing is closed.</strong></p>
+                    {% if listing.winner %}
+                        <p>Winner: {{ listing.winner.username }}</p>
+                    {% endif %}
+                {% endif %}
             </div>
-        {% else %}
-            
         {% endif %}
-    {% else %}  
+    {% else %}
         <h2>{{ message }}</h2>
     {% endif %}
-{% endblock %}  
+{% endblock %}
